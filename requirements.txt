@@ -31,7 +31,7 @@ timm==0.6.13
 spacy==3.7.4
 webdataset==0.2.48
 scikit-learn==1.2.2
-scipy==1.10.1
+scipy==1.11.3
 yarl==1.8.2
 zipp==3.14.0
 omegaconf==2.3.0
