@@ -9,7 +9,7 @@ import os
 from minigpt4.common.registry import registry
 from minigpt4.models.rec_model import Rec2Base, disabled_train
 from minigpt4.models.modeling_llama import LlamaForCausalLM
-from transformers import LlamaTokenizer, GenerationConfig
+from transformers import LlamaTokenizer, GenerationConfig, BitsAndBytesConfig
 import re
 import numpy as np
 from peft import LoraConfig, get_peft_model, get_peft_model_state_dict, prepare_model_for_int8_training, set_peft_model_state_dict
@@ -107,26 +107,40 @@ class MiniGPT4Rec_v2(Rec2Base):
             print("freeze rec encoder")
 
         print('Loading Rec_model Done')
+        print('Loading LLAMA: ' + llama_model)
+ 
+        # self.llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model, use_fast=False)
+        # self.llama_tokenizer.pad_token = self.llama_tokenizer.eos_token
+        # if self.low_resource:
+        #     self.llama_model = LlamaForCausalLM.from_pretrained(
+        #         llama_model,
+        #         torch_dtype=torch.float16,
+        #         load_in_8bit=True,
+        #         device_map={'': device_8bit}
+        #     )
+        # else:
+        #     self.llama_model = LlamaForCausalLM.from_pretrained(
+        #         llama_model,
+        #         torch_dtype=torch.float16,
+        #     )
 
-            
-
-        print('Loading LLAMA')
         self.llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model, use_fast=False)
         self.llama_tokenizer.pad_token = self.llama_tokenizer.eos_token
 
-        if self.low_resource:
-            self.llama_model = LlamaForCausalLM.from_pretrained(
-                llama_model,
-                torch_dtype=torch.float16,
-                load_in_8bit=True,
-                device_map={'': device_8bit}
-            )
-        else:
-            self.llama_model = LlamaForCausalLM.from_pretrained(
-                llama_model,
-                torch_dtype=torch.float16,
-            )
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+        )
 
+        self.llama_model = LlamaForCausalLM.from_pretrained(
+            llama_model,
+            quantization_config=bnb_config,
+            device_map="auto",
+            torch_dtype=torch.float16
+        )
+        
         for name, param in self.llama_model.named_parameters():
             param.requires_grad = False
         print('Loading LLAMA Done')
