@@ -119,7 +119,7 @@ def run_a_trail(train_config,log_file=None, save_mode=False,save_file=None,need_
     # load dataset
     # data_dir = "/home/zyang/LLM/MiniGPT-4/dataset/ml-100k/"
     # data_dir = "/home/sist/zyang/LLM/datasets/ml-1m/"
-    data_dir = "/data/zyang/datasets/ml-1m/"
+    data_dir = "/content/datasets/ml-1m/"
     train_data = pd.read_pickle(data_dir+"train_ood2.pkl")[['uid','iid','label']].values
     valid_data = pd.read_pickle(data_dir+"valid_ood2.pkl")[['uid','iid','label']].values
     test_data = pd.read_pickle(data_dir+"test_ood2.pkl")[['uid','iid','label']].values
@@ -347,7 +347,7 @@ if __name__=='__main__':
     dw_ = [1e-4]
     # embedding_size_ = [32, 64, 128, 156, 512]
     embedding_size_ = [256]
-    save_path = "/data/zyang/LLM/PretrainedModels/mf/"
+    save_path = "/content/mf/"
     # try:
     #     f = open("rec_mf_search_lr"+str(lr_[0])+".log",'rw+')
     # except:
@@ -367,14 +367,14 @@ if __name__=='__main__':
                 }
                 print(train_config)
                 # save_path = "/data/zyang/LLM/PretrainedModels/mf/0912_ml100k_oodv2_best_model_d64lr-0.001wd0.0001.pth"
-                save_path = "/data/zyang/LLM/PretrainedModels/mf/0912_ml1m_oodv2_best_model_d256lr-0.001wd0.0001.pth"
+                save_path = "/content/mf/0912_ml1m_oodv2_best_model_d256lr-0.001wd0.0001.pth"
                 # if os.path.exists(save_path + "0912_ml100k_oodv2_best_model_d" + str(embedding_size)+ 'lr-'+ str(lr) + "wd"+str(wd) + ".pth"):
                 #     save_path += "0912_ml100k_oodv2_best_model_d" + str(embedding_size)+ 'lr-'+ str(lr) + "wd"+str(wd) + ".pth"
                 #     print(save_path)
                 # else:
                 #     save_path += "best_model_d" + str(embedding_size) + ".pth"
                 
-                run_a_trail(train_config=train_config, log_file=f, save_mode=False,save_file=save_path,need_train=False,warm_or_cold='warm')
+                run_a_trail(train_config=train_config, log_file=f, save_mode=True,save_file=save_path,need_train=True,warm_or_cold='warm')
     if f is not None:
         f.close()
         
